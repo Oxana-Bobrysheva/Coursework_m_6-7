@@ -16,3 +16,17 @@ class Subscriber(models.Model):
     def __str__(self):
         """Функция возвращает строковое представление подписчика - его email"""
         return self.email
+
+
+class Message(models.Model):
+    """Модель сообщения, представляющая непосредственно рассылку.
+    Поля:
+        subject_of_the_letter (): Тема письма.
+        letter (): Тело письма, его содержимое.
+    """
+    subject_of_the_letter = models.CharField(max_length=150)
+    letter = models.TextField()
+
+    def __str__(self):
+        """Функция возвращает строковое представление сообщения - его тему(subject_of_the_letter)"""
+        return self.subject_of_the_letter
