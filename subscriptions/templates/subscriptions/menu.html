@@ -1,0 +1,24 @@
+<nav class="d-flex align-items-center w-100" style="padding-left: 3rem;">
+    <div class="d-flex">
+        <a class="p-2 btn btn-custom me-2" href="{% url 'main' %}">Главная</a>
+        <a class="p-2 btn btn-custom me-2" href="{% url 'contacts' %}">Контакты</a>
+        <a class="p-2 btn btn-custom me-2" href="{% url 'prices' %}">Тарифы</a>
+        <a href="{% url 'create_subscriber' %}" class="p-2 btn btn-custom me-2">Добавить нового подписчика</a>
+        <a href="{% url 'create_message' %}" class="p-2 btn btn-custom">Добавить новое сообщение</a>
+    </div>
+    <!--
+    <div class="d-flex ms-auto">
+        {% if user.is_authenticated %}
+            <a class="btn btn-info me-2">Вы вошли как: {{ user.email }}</a>
+            <form method="post" action="{% url 'users:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="p-2 btn btn-secondary">Выйти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'create_subscriber' %}" class="p-2 btn btn-light me-2">Войти</a>
+            <a href="{% url 'create_subscriber' %}" class="p-2 btn btn-light">Зарегистрироваться</a>
+        {% endif %}
+
+    </div>
+    -->
+</nav>

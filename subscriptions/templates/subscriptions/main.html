@@ -1,0 +1,43 @@
+{% extends "subscriptions/base.html" %}
+
+{% block title %}Главная - Обояшки{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Обояшки</h1>
+
+    <p class="lead">Обояшки — ваш идеальный партнер для создания и управления рассылками!
+        Наша платформа предлагает простые и удобные инструменты для организации эффективных
+        коммуникаций с вашими подписчиками.</p>
+    <p class="lead">С Обояшками вы сможете легко создавать привлекательные рассылки, управлять своей базой
+        подписчиков и отслеживать результаты. Независимо от того, хотите ли вы делиться
+        новостями, акциями или полезными советами, мы поможем вам достичь вашей аудитории с максимальным эффектом.</p>
+    <p class="lead">Чтобы начать, просто зарегистрируйтесь на нашем сайте, и следуйте простым инструкциям.
+        Ваши первые шаги к успешной рассылке всего в нескольких кликах!</p>
+
+</div>
+
+<div class="row">
+    {% for product in page_obj %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm" >
+                {% if product.product_image %}
+                    <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}"
+                         style="width:300px; height:200px; object-fit:cover;"
+                         class="card-img-top product-image mx-auto d-block mt-3"
+                    >
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center">{{ product.product_name }}</h5>
+                    <p class="card-text flex-grow-1">{{ product.product_description|truncatechars:100 }}</p>
+                    <p class="card-text text-center"><strong>Цена: </strong>{{ product.purchase_price }} ₽</p>
+                    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary mt-auto">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Товары отсутствуют.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

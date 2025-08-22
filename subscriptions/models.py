@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Subscriber(models.Model):
@@ -30,3 +31,60 @@ class Message(models.Model):
     def __str__(self):
         """Функция возвращает строковое представление сообщения - его тему(subject_of_the_letter)"""
         return self.subject_of_the_letter
+
+
+class Mailing(models.Model):
+    STATUS_CHOICES = [
+        ('created', 'Создана'),
+        ('started', 'Запущена'),
+        ('completed', 'Завершена'),
+    ]
+
+    start_time = models.DateTimeField(
+        verbose_name='Дата и время начала отправки',
+        default=timezone.now
+    )
+    end_time = models.DateTimeField(
+        verbose_name='Дата и время окончания отправки'
+    )
+    status = models.CharField(
+        verbose_name='Статус',
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='created'
+    )
+    message = models.ForeignKey(
+        'Message',
+        on_delete=models.CASCADE,
+        verbose_name='Сообщение'
+    )
+    subscribers = models.ManyToManyField(
+        'Subscriber',
+        verbose_name='Получатели'
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        verbose_name='Дата изменения',
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = 'рассылка'
+        verbose_name_plural = 'рассылки'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Рассылка #{self.id} - {self.get_status_display()}'
+
+    def update_status(self):
+        """Автоматическое обновление статуса рассылки"""
+        now = timezone.now()
+        if self.status != 'completed' and now > self.end_time:
+            self.status = 'completed'
+            self.save()
+        elif self.status == 'created' and now >= self.start_time:
+            self.status = 'started'
+            self.save()
