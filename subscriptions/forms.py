@@ -31,8 +31,20 @@ class MailingForm(forms.ModelForm):
         model = Mailing
         fields = ['start_time', 'end_time', 'message', 'subscribers']
         widgets = {
-            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
-            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'start_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control'
+                },
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'end_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control'
+                },
+                format='%Y-%m-%dT%H:%M'
+            ),
             'message': forms.Select(attrs={'class': 'form-control'}),
             'subscribers': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }

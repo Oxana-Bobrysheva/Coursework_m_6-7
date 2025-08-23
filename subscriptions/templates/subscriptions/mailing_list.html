@@ -47,7 +47,7 @@
                             </td>
                             <td>{{ mailing.start_time|date:"d.m.Y H:i" }}</td>
                             <td>{{ mailing.end_time|date:"d.m.Y H:i" }}</td>
-                            <td>{{ mailing.message.subject|truncatewords:5 }}</td>
+                            <td>{{ mailing.message.subject_of_the_letter|truncatewords:5 }}</td>
                             <td>{{ mailing.subscribers.count }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">

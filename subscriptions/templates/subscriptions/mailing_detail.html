@@ -70,6 +70,12 @@
                         <a href="{% url 'subscriptions:mailing_delete' mailing.pk %}" class="btn btn-danger">
                             Удалить
                         </a>
+                        <form method="post" action="{% url 'subscriptions:send_mailing' mailing.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                Отправить рассылку
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

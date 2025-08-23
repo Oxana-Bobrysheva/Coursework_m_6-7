@@ -1,8 +1,11 @@
 from django.contrib import messages
+from django.core.mail import send_mail
 #from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import  reverse_lazy
+from django.utils import timezone
+from django.views import View
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
 
 from .models import Subscriber, Message, Mailing
@@ -125,3 +128,36 @@ class MailingDetailView(DetailView):
     model = Mailing
     template_name = 'subscriptions/mailing_detail.html'
     context_object_name = 'mailing'
+
+class SendMailingView(View):
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+
+        # Проверяем, что время начала уже наступило и время окончания не прошло
+        if timezone.now() >= mailing.start_time:
+            if timezone.now() > mailing.end_time:
+                messages.error(request, 'Рассылка уже завершена и не может быть отправлена!')
+                return redirect('subscriptions:mailing_detail', pk=mailing.pk)
+
+            # Устанавливаем статус "запущена" перед отправкой
+            mailing.status = 'started'
+            mailing.save()
+
+            # Логика отправки сообщений
+            for subscriber in mailing.subscribers.all():
+                send_mail(
+                    mailing.message.subject_of_the_letter,
+                    mailing.message.letter,
+                    'bobrysheva_oxana@mail.ru',
+                    [subscriber.email],
+                    fail_silently=False,
+                )
+                # Например, отправка электронной почты
+                print(f"Отправка сообщения '{mailing.message.subject_of_the_letter}' на {subscriber.email}")
+
+            mailing.save()
+            messages.success(request, 'Рассылка успешно отправлена!')
+        else:
+            messages.error(request, 'Рассылка не может быть отправлена до начала!')
+
+        return redirect('subscriptions:mailing_detail', pk=mailing.pk)
