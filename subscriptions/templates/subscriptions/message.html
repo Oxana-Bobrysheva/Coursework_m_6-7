@@ -10,7 +10,7 @@
         {{ form.non_field_errors }}
         {{ form.as_p }}
         <button class="p-2 btn btn-custom" type="submit" style="margin-bottom: 1.5rem;">Сохранить</button>
-        <a href="{% url 'messages_list' %}" class="p-2 btn btn-custom" style="margin-bottom: 1.5rem;">Назад</a>
+        <a href="{% url 'subscriptions:messages_list' %}" class="p-2 btn btn-custom" style="margin-bottom: 1.5rem;">Назад</a>
     </form>
 
 {% endblock %}

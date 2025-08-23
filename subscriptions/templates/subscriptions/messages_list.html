@@ -7,7 +7,7 @@
     <h1>Список сообщений</h1>
 
     <div class="d-flex justify-content-between mb-3">
-        <a class="btn btn-custom" href="{% url 'create_message' %}">Новое сообщение</a>
+        <a class="btn btn-custom" href="{% url 'subscriptions:create_message' %}">Новое сообщение</a>
     </div>
 
     <div class="table-responsive">
@@ -34,7 +34,7 @@
                         <td>{{ message.sent_at|date:"d.m.Y H:i" }}</td>
                         <td>{{ message.stopped_at|date:"d.m.Y H:i" }}</td>
                         <td class="text-nowrap text-end">
-                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'update_message' message.pk %}">Изменить</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'subscriptions:update_message' message.pk %}">Изменить</a>
                         </td>
                     </tr>
                 {% empty %}

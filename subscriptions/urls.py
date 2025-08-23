@@ -6,6 +6,8 @@ from .views import SubscriberCreateView, SubscriberUpdateView, SubscriberListVie
     MessageListView, MessageCreateView, MessageUpdateView, MessageDeleteView, MailingListView, MailingCreateView, \
     MailingDetailView, MailingUpdateView, MailingDeleteView
 
+app_name = 'subscriptions'
+
 urlpatterns = [
     path("", views.main, name="main"),
     path('contacts/', views.contacts, name="contacts"),

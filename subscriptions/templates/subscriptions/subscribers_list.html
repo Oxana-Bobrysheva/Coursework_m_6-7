@@ -6,13 +6,13 @@
 </head>
 <body>
     <h1>Список подписчиков</h1>
-    <a href="{% url 'create_subscriber' %}">Добавить подписчика</a>
+    <a href="{% url 'subscriptions:create_subscriber' %}">Добавить подписчика</a>
     <ul>
         {% for subscriber in subscribers %}
             <li>
                 {{ subscriber.full_name }} ({{ subscriber.email }})
-                <a href="{% url 'update_subscriber' subscriber.pk %}">Редактировать</a>
-                <a href="{% url 'delete_subscriber' subscriber.pk %}">Удалить</a>
+                <a href="{% url 'subscriptions:update_subscriber' subscriber.pk %}">Редактировать</a>
+                <a href="{% url 'subscriptions:delete_subscriber' subscriber.pk %}">Удалить</a>
             </li>
         {% endfor %}
     </ul>

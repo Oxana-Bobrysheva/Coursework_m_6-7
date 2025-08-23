@@ -1,11 +1,10 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+#from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import  reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
 
-import subscriptions
 from .models import Subscriber, Message, Mailing
 from .forms import SubscriberForm, MessageForm, MailingForm
 
@@ -15,7 +14,7 @@ class SubscriberCreateView(CreateView):
     model = Subscriber
     form_class = SubscriberForm
     template_name = 'subscriptions/subscribe.html'
-    success_url = reverse_lazy('subscribers_list')
+    success_url = reverse_lazy('subscriptions:subscribers_list')
 
 
 class SubscriberListView(ListView):
@@ -27,14 +26,14 @@ class SubscriberListView(ListView):
 class SubscriberUpdateView(UpdateView):
     model = Subscriber
     form_class = SubscriberForm
-    template_name = 'subscribe.html'
-    success_url = reverse_lazy('subscribers_list')
+    template_name = 'subscriptions/subscribe.html'
+    success_url = reverse_lazy('subscriptions:subscribers_list')
 
 
 class SubscriberDeleteView(DeleteView):
     model = Subscriber
-    template_name = "subscriber_confirm_delete.html"
-    success_url = reverse_lazy("subscribers_list")
+    template_name = "subscriptions/subscriber_confirm_delete.html"
+    success_url = reverse_lazy("subscriptions:subscribers_list")
 
 
 # All views for Message
@@ -42,7 +41,7 @@ class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
     template_name = 'subscriptions/message.html'
-    success_url = reverse_lazy('messages_list')
+    success_url = reverse_lazy('subscriptions:messages_list')
 
 class MessageListView(ListView):
     model = Message
@@ -52,13 +51,13 @@ class MessageListView(ListView):
 class MessageUpdateView(UpdateView):
     model = Message
     form_class = MessageForm
-    template_name = 'message.html'
-    success_url = reverse_lazy('messages_list')
+    template_name = 'subscriptions/message.html'
+    success_url = reverse_lazy('subscriptions:messages_list')
 
 class MessageDeleteView(DeleteView):
     model = Message
-    template_name = "message_confirm_delete.html"
-    success_url = reverse_lazy("messages_list")
+    template_name = "subscriptions/message_confirm_delete.html"
+    success_url = reverse_lazy("subscriptions:messages_list")
 
 
 # Views for main and contacts pages
@@ -79,7 +78,7 @@ def prices(request):
 
 
 # Views for Mailing
-class MailingListView(LoginRequiredMixin, ListView):
+class MailingListView(ListView):
     model = Mailing
     template_name = 'subscriptions/mailing_list.html'
     context_object_name = 'mailings'
@@ -88,7 +87,7 @@ class MailingListView(LoginRequiredMixin, ListView):
         return Mailing.objects.all().prefetch_related('subscribers')
 
 
-class MailingCreateView(LoginRequiredMixin, CreateView):
+class MailingCreateView(CreateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'subscriptions/mailing_form.html'
@@ -100,7 +99,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class MailingUpdateView(LoginRequiredMixin, UpdateView):
+class MailingUpdateView(UpdateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'subscriptions/mailing_form.html'
@@ -112,7 +111,7 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class MailingDeleteView(LoginRequiredMixin, DeleteView):
+class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = 'subscriptions/mailing_confirm_delete.html'
     success_url = reverse_lazy('subscriptions:mailing_list')
@@ -122,7 +121,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class MailingDetailView(LoginRequiredMixin, DetailView):
+class MailingDetailView(DetailView):
     model = Mailing
     template_name = 'subscriptions/mailing_detail.html'
     context_object_name = 'mailing'
