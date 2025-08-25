@@ -88,3 +88,38 @@ class Mailing(models.Model):
         elif self.status == 'created' and now >= self.start_time:
             self.status = 'started'
             self.save()
+
+
+class MailingAttempt(models.Model):
+    STATUS_CHOICES = [
+        ('successful', 'Успешно'),
+        ('failed', 'Не успешно'),
+    ]
+
+    attempt_time = models.DateTimeField(
+        verbose_name='Дата и время попытки',
+        default=timezone.now
+    )
+    status = models.CharField(
+        verbose_name='Статус',
+        max_length=10,
+        choices=STATUS_CHOICES
+    )
+    server_response = models.TextField(
+        verbose_name='Ответ почтового сервера',
+        blank=True
+    )
+    mailing = models.ForeignKey(
+        Mailing,
+        on_delete=models.CASCADE,
+        related_name='attempts',
+        verbose_name='Рассылка'
+    )
+
+    class Meta:
+        verbose_name = 'Попытка рассылки'
+        verbose_name_plural = 'Попытки рассылок'
+        ordering = ['-attempt_time']
+
+    def __str__(self):
+        return f'Попытка #{self.id} - {self.get_status_display()}'

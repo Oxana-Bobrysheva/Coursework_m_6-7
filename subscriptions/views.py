@@ -10,6 +10,7 @@ from django.views.generic import CreateView, UpdateView, ListView, DeleteView, D
 
 from .models import Subscriber, Message, Mailing
 from .forms import SubscriberForm, MessageForm, MailingForm
+from .services import send_mailing
 
 
 # All views for Subscriber
@@ -161,3 +162,8 @@ class SendMailingView(View):
             messages.error(request, 'Рассылка не может быть отправлена до начала!')
 
         return redirect('subscriptions:mailing_detail', pk=mailing.pk)
+
+    def start_mailing(request, mailing_id):
+        mailing = Mailing.objects.get(id=mailing_id)
+        send_mailing(mailing)
+        return redirect('mailing_list')
