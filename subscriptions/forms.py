@@ -63,7 +63,7 @@ class MailingForm(forms.ModelForm):
         if start_time and end_time:
             if start_time >= end_time:
                 raise forms.ValidationError("Время окончания должно быть позже времени начала!")
-            if start_time < timezone.now():
-                raise forms.ValidationError("Время начала не может быть в прошлом!")
+            # if start_time < timezone.now():
+            #     raise forms.ValidationError("Время начала не может быть в прошлом!")
 
         return cleaned_data

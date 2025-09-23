@@ -1,3 +1,4 @@
+from decouple import config
 from django.core.mail import send_mail
 from django.utils import timezone
 from .models import Mailing, MailingAttempt
@@ -13,7 +14,7 @@ def send_mailing(mailing):
             result = send_mail(
                 mailing.message.subject_of_the_letter,
                 mailing.message.letter,
-                'bobrysheva_oxana@mail.ru',
+                config('EMAIL_HOST_USER'),
                 [subscriber.email],
                 fail_silently=False,
             )

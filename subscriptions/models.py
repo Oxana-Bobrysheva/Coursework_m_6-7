@@ -115,11 +115,17 @@ class MailingAttempt(models.Model):
         related_name='attempts',
         verbose_name='Рассылка'
     )
+    subscriber = models.ForeignKey(
+        "Subscriber",
+        on_delete=models.CASCADE,
+        verbose_name="Подписчик")
+
 
     class Meta:
         verbose_name = 'Попытка рассылки'
         verbose_name_plural = 'Попытки рассылок'
         ordering = ['-attempt_time']
+
 
     def __str__(self):
         return f'Попытка #{self.id} - {self.get_status_display()}'

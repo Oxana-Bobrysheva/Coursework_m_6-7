@@ -15,29 +15,67 @@
     <p class="lead">Чтобы начать, просто зарегистрируйтесь на нашем сайте, и следуйте простым инструкциям.
         Ваши первые шаги к успешной рассылке всего в нескольких кликах!</p>
 
-</div>
 
-<div class="row">
-    {% for product in page_obj %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm" >
-                {% if product.product_image %}
-                    <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}"
-                         style="width:300px; height:200px; object-fit:cover;"
-                         class="card-img-top product-image mx-auto d-block mt-3"
-                    >
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-center">{{ product.product_name }}</h5>
-                    <p class="card-text flex-grow-1">{{ product.product_description|truncatechars:100 }}</p>
-                    <p class="card-text text-center"><strong>Цена: </strong>{{ product.purchase_price }} ₽</p>
-                    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary mt-auto">Подробнее</a>
+</div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h1 class="text-center mb-4">Добро пожаловать в систему управления рассылками</h1>
+
+            <div class="row">
+                <!-- Карточка с общим количеством рассылок -->
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center shadow h-100">
+                        <div class="card-header bg-primary text-white d-flex align-items-center" style="min-height: 90px;">
+                            <h5 class="card-title mb-0">Всего рассылок</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="text-primary">{{ total_mailings }}</h2>
+                            <p class="card-text">Общее количество созданных рассылок.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка с активными рассылками -->
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center shadow h-100">
+                        <div class="card-header bg-success text-white d-flex align-items-center" style="min-height: 90px;">
+                            <h5 class="card-title mb-0">Активных рассылок</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="text-success">{{ active_mailings }}</h2>
+                            <p class="card-text">Рассылки со статусом "Запущена"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка с уникальными получателями -->
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center shadow h-100">
+                        <div class="card-header bg-info text-white d-flex align-items-center" style="min-height: 90px;">
+                            <h5 class="card-title mb-0">Уникальных получателей</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="text-info">{{ unique_subscribers }}</h2>
+                            <p class="card-text">Количество уникальных email-адресов</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'subscriptions:mailing_list' %}" class="btn btn-custom btn-lg">
+                    <i class="bi bi-envelope"></i> Управление рассылками
+                </a>
+                <a href="{% url 'subscriptions:messages_list' %}" class="btn btn-custom btn-lg ms-2">
+                    <i class="bi bi-pencil-square"></i> Сообщения
+                </a>
+                <a href="{% url 'subscriptions:subscribers_list' %}" class="btn btn-custom btn-lg ms-2">
+                    <i class="bi bi-people"></i> Подписчики
+                </a>
+            </div>
         </div>
-    {% empty %}
-        <p>Товары отсутствуют.</p>
-    {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

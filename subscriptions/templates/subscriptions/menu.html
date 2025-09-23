@@ -3,8 +3,8 @@
         <a class="p-2 btn btn-custom me-2" href="{% url 'subscriptions:main' %}">Главная</a>
         <a class="p-2 btn btn-custom me-2" href="{% url 'subscriptions:contacts' %}">Контакты</a>
         <a class="p-2 btn btn-custom me-2" href="{% url 'subscriptions:prices' %}">Тарифы</a>
-        <a href="{% url 'subscriptions:create_subscriber' %}" class="p-2 btn btn-custom me-2">Добавить нового подписчика</a>
-        <a href="{% url 'subscriptions:create_message' %}" class="p-2 btn btn-custom me-2">Добавить новое сообщение</a>
+        <a href="{% url 'subscriptions:subscribers_list' %}" class="p-2 btn btn-custom me-2">Подписчики</a>
+        <a href="{% url 'subscriptions:messages_list' %}" class="p-2 btn btn-custom me-2">Сообщения</a>
         <a href="{% url 'subscriptions:mailing_list' %}" class="p-2 btn btn-custom me-2">Рассылки</a>
 
     </div>

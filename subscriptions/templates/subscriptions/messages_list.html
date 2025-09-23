@@ -1,13 +1,13 @@
 {% extends "subscriptions/base.html" %}
 
-{% block title %}Список сообщений{% endblock %}
+{% block title %}Список сообщений - Обояшки{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <h1>Список сообщений</h1>
 
     <div class="d-flex justify-content-between mb-3">
-        <a class="btn btn-custom" href="{% url 'subscriptions:create_message' %}">Новое сообщение</a>
+        <a class="btn btn-custom" href="{% url 'subscriptions:create_message' %}">Создать сообщение</a>
     </div>
 
     <div class="table-responsive">
@@ -16,10 +16,7 @@
                 <tr>
                     <th scope="col">№</th>
                     <th scope="col">Тема</th>
-                    <th scope="col">Статус</th>
-                    <th scope="col">Дата создания</th>
-                    <th scope="col">Дата первой рассылки</th>
-                    <th scope="col">Дата окончания отправки</th>
+                    <th scope="col">Содержание</th>
                     <th scope="col" class="text-end">Действия</th>
                 </tr>
             </thead>
@@ -29,12 +26,10 @@
                     <tr>
                         <th scope="row">{{ message.id }}</th>
                         <td>{{ message.subject_of_the_letter }}</td>
-                        <td>{{ message.status }}</td>
-                        <td>{{ message.created_at|date:"d.m.Y H:i" }}</td>
-                        <td>{{ message.sent_at|date:"d.m.Y H:i" }}</td>
-                        <td>{{ message.stopped_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ message.letter }}</td>
                         <td class="text-nowrap text-end">
-                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'subscriptions:update_message' message.pk %}">Изменить</a>
+                            <a class="btn btn-sm btn-custom" href="{% url 'subscriptions:update_message' message.pk %}">Изменить</a>
+                            <a class="btn btn-sm btn-outline-danger" href="{% url 'subscriptions:delete_message' message.pk %}">Удалить</a>
                         </td>
                     </tr>
                 {% empty %}

@@ -1,5 +1,5 @@
 {% extends 'subscriptions/base.html' %}
-
+{% load custom_filters %}
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -43,23 +43,62 @@
                         <strong>Сообщение:</strong><br>
                         <div class="card bg-light">
                             <div class="card-body">
-                                <h6>{{ mailing.message.subject_of_the_letter }}</h6>
-                                <p class="mb-0">{{ mailing.message.body }}</p>
+                                <strong>{{ mailing.message.subject_of_the_letter }}</strong>
+                                <p class="mb-0">{{ mailing.message.letter }}</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mb-4">
-                        <strong>Получатели ({{ mailing.subscribers.count }}):</strong>
-                        <div class="list-group mt-2">
-                            {% for subscriber in mailing.subscribers.all %}
-                            <div class="list-group-item">
-                                {{ subscriber.email }} - {{ subscriber.full_name }}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    
+
+                    <div class="card">
+        <div class="card-body">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Получатель</th>
+                            <th>Попытки отправки</th>
+                            <th>Статус отправки</th>
+                            <th>действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% for subscriber in mailing.subscribers.all %}
+                      <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ subscriber.email }}</td>
+                        <td>{{ attempt_counts|get_item:subscriber.email|default:"0" }}</td>
+                        <td>
+                          {% with attempt=last_attempts|get_item:subscriber.email %}
+                            {% if attempt %}
+                              {{ attempt.get_status_display }}
+                            {% else %}
+                              Нет данных
+                            {% endif %}
+                          {% endwith %}
+                        </td>
+                        <td>
+                          <!-- Здесь можно добавить действия, например, кнопку повторной отправки -->
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                        <td colspan="5" class="text-center">Нет подписчиков для этой рассылки</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'subscriptions:mailing_list' %}" class="btn btn-secondary me-md-2">
                             Назад к списку

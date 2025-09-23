@@ -1,13 +1,15 @@
 {% extends 'subscriptions/base.html' %}
 
+{% block title %}Рассылки - Обояшки{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
+    <h1>Управление рассылками</h1>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Управление рассылками</h2>
-        <a href="{% url 'subscriptions:mailing_create' %}" class="btn btn-custom">
-            <i class="bi bi-plus-circle"></i> Создать рассылку
-        </a>
-    </div>
+
+            <a href="{% url 'subscriptions:mailing_create' %}" class="btn btn-custom"> Создать рассылку </a>
+        </div>
+</div>
 
     {% if messages %}
         {% for message in messages %}

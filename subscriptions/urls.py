@@ -9,7 +9,7 @@ from .views import SubscriberCreateView, SubscriberUpdateView, SubscriberListVie
 app_name = 'subscriptions'
 
 urlpatterns = [
-    path("", views.main, name="main"),
+    path("", views.index, name="main"),
     path('contacts/', views.contacts, name="contacts"),
     path('prices/', views.prices, name='prices'),
 

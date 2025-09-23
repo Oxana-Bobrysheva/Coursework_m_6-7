@@ -1,16 +1,17 @@
+from decouple import config
 from django.contrib import messages
 from django.core.mail import send_mail
-#from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import Http404
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import  reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
 
-from .models import Subscriber, Message, Mailing
 from .forms import SubscriberForm, MessageForm, MailingForm
-from .services import send_mailing
+from subscriptions.models import Subscriber, Message, Mailing, MailingAttempt
 
 
 # All views for Subscriber
@@ -81,6 +82,27 @@ def prices(request):
     return render(request, 'subscriptions/prices.html')
 
 
+def index(request):
+    # Общее количество рассылок
+    print("Index view called!")
+    total_mailings = Mailing.objects.count()
+    print(f"Total mailings: {total_mailings}")
+
+    # Количество активных рассылок (статус 'started')
+    active_mailings = Mailing.objects.filter(status='started').count()
+
+    # Количество уникальных получателей (уникальные email)
+    unique_subscribers = Subscriber.objects.values('email').distinct().count()
+
+    context = {
+        'total_mailings': total_mailings,
+        'active_mailings': active_mailings,
+        'unique_subscribers': unique_subscribers,
+    }
+
+    return render(request, 'subscriptions/main.html', context)
+
+
 # Views for Mailing
 class MailingListView(ListView):
     model = Mailing
@@ -88,7 +110,14 @@ class MailingListView(ListView):
     context_object_name = 'mailings'
 
     def get_queryset(self):
-        return Mailing.objects.all().prefetch_related('subscribers')
+        mailings = Mailing.objects.all().prefetch_related('subscribers')
+        for mailing in mailings:
+            mailing.update_status()
+            for subscriber in mailing.subscribers.all():
+                subscriber.attempt_count = MailingAttempt.objects.filter(mailing=mailing, subscriber=subscriber).count()
+
+        return mailings
+
 
 
 class MailingCreateView(CreateView):
@@ -130,6 +159,38 @@ class MailingDetailView(DetailView):
     template_name = 'subscriptions/mailing_detail.html'
     context_object_name = 'mailing'
 
+    def get_object(self, queryset=None):
+        """Override to ensure proper object retrieval"""
+        queryset = queryset or self.get_queryset()
+        pk = self.kwargs.get('pk')
+        if pk is None:
+            raise Http404("No primary key specified")
+
+        try:
+            obj = get_object_or_404(queryset, pk=pk)
+            print(f"Retrieved mailing: ID={obj.id}, PK={obj.pk}")  # Debugging
+            return obj
+        except Mailing.DoesNotExist:
+            raise Http404("Рассылка не найдена")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mailing = self.object
+        attempts = MailingAttempt.objects.filter(mailing=mailing)
+
+        attempt_counts = {}
+        last_attempts = {}
+
+        for subscriber in mailing.subscribers.all():
+            subscriber_attempts = attempts.filter(subscriber=subscriber)
+            attempt_counts[subscriber.email] = subscriber_attempts.count()
+            last_attempts[subscriber.email] = subscriber_attempts.last() if subscriber_attempts.exists() else None
+
+        context['attempt_counts'] = attempt_counts
+        context['last_attempts'] = last_attempts
+        return context
+
+
 class SendMailingView(View):
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
@@ -144,26 +205,38 @@ class SendMailingView(View):
             mailing.status = 'started'
             mailing.save()
 
+            successful_sends = 0
+            failed_sends = 0
+
             # Логика отправки сообщений
             for subscriber in mailing.subscribers.all():
-                send_mail(
-                    mailing.message.subject_of_the_letter,
-                    mailing.message.letter,
-                    'bobrysheva_oxana@mail.ru',
-                    [subscriber.email],
-                    fail_silently=False,
-                )
-                # Например, отправка электронной почты
-                print(f"Отправка сообщения '{mailing.message.subject_of_the_letter}' на {subscriber.email}")
+                try:
+                    send_mail(
+                        mailing.message.subject_of_the_letter,
+                        mailing.message.letter,
+                        config('EMAIL_HOST_USER'),
+                        [subscriber.email],
+                        fail_silently=False,
+                        )
 
-            mailing.save()
-            messages.success(request, 'Рассылка успешно отправлена!')
+                    MailingAttempt.objects.create(
+                        mailing = mailing,
+                        subscriber=subscriber,
+                        status="successful",
+                        server_response="Email sent successfully"
+                    )
+                    successful_sends += 1
+
+                except Exception as e:
+                    MailingAttempt.objects.create(
+                        mailing=mailing,
+                        status="failed",
+                        server_response=str(e)
+                    )
+                    failed_sends += 1
+
+            messages.success(request, 'Рассылка отправлена!')
         else:
             messages.error(request, 'Рассылка не может быть отправлена до начала!')
 
         return redirect('subscriptions:mailing_detail', pk=mailing.pk)
-
-    def start_mailing(request, mailing_id):
-        mailing = Mailing.objects.get(id=mailing_id)
-        send_mailing(mailing)
-        return redirect('mailing_list')
