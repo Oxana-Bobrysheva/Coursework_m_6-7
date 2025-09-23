@@ -1,0 +1,16 @@
+{% extends "subscriptions/base.html" %}
+
+{% block title %}Добавить подписчика{% endblock %}
+
+{% block content %}
+
+    <h1>Ваш новый подписчик</h1>
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button class="p-2 btn btn-custom" type="submit" style="margin-bottom: 1.5rem;">Сохранить</button>
+        <a href="{% url 'subscriptions:subscribers_list' %}" class="p-2 btn btn-custom" style="margin-bottom: 1.5rem;">Назад</a>
+    </form>
+
+{% endblock %}
