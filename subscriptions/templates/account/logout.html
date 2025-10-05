@@ -1,0 +1,24 @@
+{% extends 'subscriptions/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Выход из системы</h4>
+                </div>
+                <div class="card-body">
+                    <p>Вы уверены, что хотите выйти?</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form }}
+                        <button type="submit" class="btn btn-danger">Выйти</button>
+                        <a href="{% url 'account_login' %}" class="btn btn-secondary ms-2">Отмена</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

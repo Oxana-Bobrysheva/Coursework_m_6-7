@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -13,7 +14,11 @@ class Subscriber(models.Model):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=120, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
-
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Владелец клиента',
+        )
     def __str__(self):
         """Функция возвращает строковое представление подписчика - его email"""
         return self.email
@@ -70,6 +75,12 @@ class Mailing(models.Model):
         verbose_name='Дата изменения',
         auto_now=True
     )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Владелец рассылки',
+       )
+    is_active = models.BooleanField(verbose_name='Активна', default=True)
 
     class Meta:
         verbose_name = 'рассылка'
@@ -89,6 +100,24 @@ class Mailing(models.Model):
             self.status = 'started'
             self.save()
 
+    def get_total_attempts(self):
+        """Общее количество попыток отправки"""
+        return self.attempts.count()  # Используем related_name='attempts'
+
+    def get_successful_attempts(self):
+        """Количество успешных отправок"""
+        return self.attempts.filter(status='successful').count()  # Ваш статус 'successful'
+
+    def get_failed_attempts(self):
+        """Количество неудачных отправок"""
+        return self.attempts.filter(status='failed').count()  # Ваш статус 'failed'
+
+    def get_success_rate(self):
+        """Процент успешных отправок"""
+        total = self.get_total_attempts()
+        if total == 0:
+            return 0
+        return round((self.get_successful_attempts() / total) * 100, 1)
 
 class MailingAttempt(models.Model):
     STATUS_CHOICES = [
