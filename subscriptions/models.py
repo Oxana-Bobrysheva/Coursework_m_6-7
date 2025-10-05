@@ -19,6 +19,7 @@ class Subscriber(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Владелец клиента',
         )
+
     def __str__(self):
         """Функция возвращает строковое представление подписчика - его email"""
         return self.email
@@ -119,6 +120,7 @@ class Mailing(models.Model):
             return 0
         return round((self.get_successful_attempts() / total) * 100, 1)
 
+
 class MailingAttempt(models.Model):
     STATUS_CHOICES = [
         ('successful', 'Успешно'),
@@ -149,12 +151,10 @@ class MailingAttempt(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Подписчик")
 
-
     class Meta:
         verbose_name = 'Попытка рассылки'
         verbose_name_plural = 'Попытки рассылок'
         ordering = ['-attempt_time']
-
 
     def __str__(self):
         return f'Попытка #{self.id} - {self.get_status_display()}'

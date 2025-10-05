@@ -20,6 +20,7 @@ from subscriptions.models import Subscriber, Message, Mailing, MailingAttempt
 def is_manager(user):
     return user.groups.filter(name='Manager').exists()
 
+
 def mailing_toggle_active(request, pk):
     mailing = get_object_or_404(Mailing, pk=pk)
     if is_manager(request.user):
@@ -27,6 +28,7 @@ def mailing_toggle_active(request, pk):
         mailing.save()
         messages.success(request, f'Рассылка {"деактивирована" if not mailing.is_active else "активирована"}.')
     return redirect('subscriptions:mailing_list')
+
 
 # All views for Subscriber
 class SubscriberCreateView(LoginRequiredMixin, CreateView):
@@ -136,6 +138,7 @@ def contacts(request):
 def prices(request):
     return render(request, 'subscriptions/prices.html')
 
+
 @cache_page(60 * 15)
 def index(request):
     user = request.user
@@ -160,8 +163,6 @@ def index(request):
         total_mailings = Mailing.objects.count()
         active_mailings = Mailing.objects.filter(status='started').count()
         unique_subscribers = Subscriber.objects.values('email').distinct().count()
-
-
     print(f"Total mailings: {total_mailings}")
     context = {
         'total_mailings': total_mailings,
@@ -169,6 +170,7 @@ def index(request):
         'unique_subscribers': unique_subscribers,
     }
     return render(request, 'subscriptions/main.html', context)
+
 
 # Views for Mailing
 class MailingListView(LoginRequiredMixin, ListView):

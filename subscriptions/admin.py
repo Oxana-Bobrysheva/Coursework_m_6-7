@@ -10,18 +10,21 @@ class MailingAdmin(admin.ModelAdmin):
     filter_horizontal = ['subscribers']
     readonly_fields = ['created_at', 'updated_at']
 
-       # Register the Subscriber model
+
+# Register the Subscriber model
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):
     list_display = ('id', 'email', 'name', 'comment')  # Fields to display in the list view
     search_fields = ('email', 'name')  # Fields to search by in the admin interface
     list_filter = ('name',)  # Fields to filter by in the admin interface
 
+
 # Register the Message model
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('subject_of_the_letter',)  # Fields to display in the list view
     search_fields = ('subject_of_the_letter',)  # Fields to search by in the admin interface
+
 
 @admin.register(MailingAttempt)
 class MailingAttemptAdmin(admin.ModelAdmin):

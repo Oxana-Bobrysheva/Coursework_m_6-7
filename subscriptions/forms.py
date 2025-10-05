@@ -15,6 +15,7 @@ class SubscriberForm(forms.ModelForm):
             'comment': 'Комментарии о подписчике'
             }
 
+
 class MessageForm(forms.ModelForm):
     """Эта форма будет использоваться для добавления нового подписчика."""
     class Meta:
