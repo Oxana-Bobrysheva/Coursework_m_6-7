@@ -122,7 +122,7 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 # Views for main and contacts pages
-@cache_page(60 * 15)  # Кэширование на 15 минут
+#@cache_page(60 * 15)  # Кэширование на 15 минут
 def main_view(request):
     user = request.user
 
