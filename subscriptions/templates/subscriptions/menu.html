@@ -14,12 +14,14 @@
         <div class="ms-auto d-flex align-items-center">
             {% if user.is_authenticated %}
                 <span class="navbar-text me-2">Вы вошли как: {{ user.email }}!</span>
-                <a class="p-2 btn btn-custom me-2" href="{% url 'account_logout' %}">Выйти</a>
+                <form method="post" action="{% url 'subscriptions:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 btn btn-custom me-2">Выйти</button>
+                </form>
             {% else %}
-                <a class="p-2 btn btn-custom me-2" href="{% url 'account_login' %}">Войти</a>
-                <a class="p-2 btn btn-custom me-2" href="{% url 'account_signup' %}">Регистрация</a>
+                <a class="p-2 btn btn-custom me-2" href="{% url 'subscriptions:login' %}">Войти</a>
+                <a class="p-2 btn btn-custom me-2" href="{% url 'subscriptions:signup' %}">Регистрация</a>
             {% endif %}
         </div>
     </div>
 </nav>
-

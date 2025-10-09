@@ -56,10 +56,11 @@ ROOT_URLCONF = "coursework.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                'django.template.context_processors.debug',
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -149,13 +150,19 @@ LOGOUT_REDIRECT_URL = '/'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # Temporary: Use local memory instead of Redis
     }
 }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
 
 # Опционально: настройка для сессий
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

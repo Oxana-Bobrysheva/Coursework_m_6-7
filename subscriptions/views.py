@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from decouple import config
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -121,8 +122,42 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 # Views for main and contacts pages
-def main(request):
-    return render(request, 'subscriptions/main.html')
+@cache_page(60 * 15)  # Кэширование на 15 минут
+def main_view(request):
+    user = request.user
+
+    # Инициализация переменных по умолчанию
+    total_mailings = 0
+    active_mailings = 0
+    unique_subscribers = 0
+
+    try:
+        if user.is_authenticated:
+            # Фильтрация по owner только для аутентифицированных пользователей
+            if is_manager(user):
+                total_mailings = Mailing.objects.count()
+                active_mailings = Mailing.objects.filter(status='started').count()
+                unique_subscribers = Subscriber.objects.values('email').distinct().count()
+            else:
+                total_mailings = Mailing.objects.filter(owner=user).count()
+                active_mailings = Mailing.objects.filter(owner=user, status='started').count()
+                unique_subscribers = Subscriber.objects.filter(owner=user).values('email').distinct().count()
+        else:
+            total_mailings = Mailing.objects.count()
+            active_mailings = Mailing.objects.filter(status='started').count()
+            unique_subscribers = Subscriber.objects.values('email').distinct().count()
+    except Exception as e:
+        # Обработка ошибок (например, если модели не существуют)
+        print(f"Error in main_view: {e}")
+        total_mailings = active_mailings = unique_subscribers = 0
+
+    print(f"Total mailings: {total_mailings}")
+    context = {
+        'total_mailings': total_mailings,
+        'active_mailings': active_mailings,
+        'unique_subscribers': unique_subscribers,
+    }
+    return render(request, 'subscriptions/main.html', context)
 
 
 def contacts(request):
@@ -137,39 +172,6 @@ def contacts(request):
 
 def prices(request):
     return render(request, 'subscriptions/prices.html')
-
-
-@cache_page(60 * 15)
-def index(request):
-    user = request.user
-    print("Index view called!")
-
-    # Инициализация переменных по умолчанию
-    total_mailings = 0
-    active_mailings = 0
-    unique_subscribers = 0
-
-    if user.is_authenticated:
-        # Фильтрация по owner только для аутентифицированных пользователей
-        if is_manager(user):
-            total_mailings = Mailing.objects.count()
-            active_mailings = Mailing.objects.filter(status='started').count()
-            unique_subscribers = Subscriber.objects.values('email').distinct().count()
-        else:
-            total_mailings = Mailing.objects.filter(owner=user).count()
-            active_mailings = Mailing.objects.filter(owner=user, status='started').count()
-            unique_subscribers = Subscriber.objects.filter(owner=user).values('email').distinct().count()
-    else:
-        total_mailings = Mailing.objects.count()
-        active_mailings = Mailing.objects.filter(status='started').count()
-        unique_subscribers = Subscriber.objects.values('email').distinct().count()
-    print(f"Total mailings: {total_mailings}")
-    context = {
-        'total_mailings': total_mailings,
-        'active_mailings': active_mailings,
-        'unique_subscribers': unique_subscribers,
-    }
-    return render(request, 'subscriptions/main.html', context)
 
 
 # Views for Mailing
@@ -193,9 +195,6 @@ class MailingListView(LoginRequiredMixin, ListView):
                 attempt_count=Count('mailingattempt')  # Подсчитываем попытки для каждого subscriber
             ))
         )
-
-        for mailing in queryset:
-            mailing.update_status()
 
         return queryset
 
@@ -355,6 +354,9 @@ class SendMailingView(LoginRequiredMixin, View):
                         server_response=str(e)
                     )
                     failed_sends += 1
+            if failed_sends == 0 and successful_sends > 0:
+                mailing.status = 'completed'
+                mailing.save()
 
             messages.success(request, 'Рассылка отправлена!')
         else:
@@ -428,3 +430,8 @@ class MailingToggleActiveView(ManagerRequiredMixin, View):
         status = "отключена" if not mailing.is_active else "включена"
         messages.success(request, f'Рассылка #{mailing.id} {status}!')
         return redirect('subscriptions:mailing_list')
+
+
+class CustomLogoutView(DjangoLogoutView):
+    template_name = 'account/login.html'
+    success_url = reverse_lazy('subscriptions:main')
