@@ -159,7 +159,7 @@ def main_view(request):
     }
     return render(request, 'subscriptions/main.html', context)
 
-
+@cache_page(60 * 15)
 def contacts(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -169,7 +169,7 @@ def contacts(request):
         return render(request, 'subscriptions/success.html', {'name': name})
     return render(request, 'subscriptions/contacts.html')
 
-
+@cache_page(60 * 15)
 def prices(request):
     return render(request, 'subscriptions/prices.html')
 
@@ -209,6 +209,11 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     form_class = MailingForm
     template_name = 'subscriptions/mailing_form.html'
     success_url = reverse_lazy('subscriptions:mailing_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Pass the current user to the form
+        return kwargs
 
     def form_valid(self, form):
         form.instance.owner = self.request.user

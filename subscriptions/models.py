@@ -33,6 +33,11 @@ class Message(models.Model):
     """
     subject_of_the_letter = models.CharField(max_length=150)
     letter = models.TextField()
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Владелец сообщения',
+        )
 
     def __str__(self):
         """Функция возвращает строковое представление сообщения - его тему(subject_of_the_letter)"""

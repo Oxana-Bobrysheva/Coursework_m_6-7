@@ -56,6 +56,13 @@ class MailingForm(forms.ModelForm):
             'subscribers': 'Получатели',
         }
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            # Фильтруем подписчиков по owner
+            self.fields['subscribers'].queryset = Subscriber.objects.filter(owner=self.user)
+
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get('start_time')
@@ -64,7 +71,5 @@ class MailingForm(forms.ModelForm):
         if start_time and end_time:
             if start_time >= end_time:
                 raise forms.ValidationError("Время окончания должно быть позже времени начала!")
-            # if start_time < timezone.now():
-            #     raise forms.ValidationError("Время начала не может быть в прошлом!")
 
         return cleaned_data
