@@ -1,15 +1,20 @@
 from django.views.generic import TemplateView
 from django.urls import path
-
+from subscriptions.views import main_view, CustomLogoutView
+from allauth.account.views import LoginView, SignupView, LogoutView
 from . import views
-from .views import SubscriberCreateView, SubscriberUpdateView, SubscriberListView, SubscriberDeleteView, \
-    MessageListView, MessageCreateView, MessageUpdateView, MessageDeleteView, MailingListView, MailingCreateView, \
-    MailingDetailView, MailingUpdateView, MailingDeleteView, SendMailingView
+from .views import (
+    SubscriberCreateView, SubscriberUpdateView, SubscriberListView, SubscriberDeleteView,
+    MessageListView, MessageCreateView, MessageUpdateView, MessageDeleteView,
+    MailingListView, MailingCreateView, MailingDetailView, MailingUpdateView, MailingDeleteView,
+    SendMailingView, MailingAttemptListView, MailingStatsView,
+    UserListView, UserToggleActiveView, MailingToggleActiveView,
+)
 
 app_name = 'subscriptions'
 
 urlpatterns = [
-    path("", views.index, name="main"),
+    path("", main_view, name="main"),
     path('contacts/', views.contacts, name="contacts"),
     path('prices/', views.prices, name='prices'),
 
@@ -30,4 +35,20 @@ urlpatterns = [
     path('mailings/<int:pk>/delete/', MailingDeleteView.as_view(), name='mailing_delete'),
 
     path('mailings/<int:pk>/send/', SendMailingView.as_view(), name='send_mailing'),
+    path('mailings/attempts/', MailingAttemptListView.as_view(), name='mailing_attempts'),
+    path('mailings/<int:pk>/attempts/', MailingAttemptListView.as_view(), name='mailing_attempt_list'),
+
+    # Статистика
+    path('stats/', MailingStatsView.as_view(), name='mailing_stats'),
+
+    # Управление пользователями (только для менеджеров)
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/<int:pk>/toggle/', UserToggleActiveView.as_view(), name='user_toggle_active'),
+
+    # Отключение рассылок (только для менеджеров)
+    path('mailings/<int:pk>/toggle/', MailingToggleActiveView.as_view(), name='mailing_toggle_active'),
+
+    path('login/', LoginView.as_view(), name='login'),
+    path('signup/', SignupView.as_view(), name='signup'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
     ]

@@ -26,7 +26,8 @@
                 <!-- Карточка с общим количеством рассылок -->
                 <div class="col-md-4 mb-4">
                     <div class="card text-center shadow h-100">
-                        <div class="card-header bg-primary text-white d-flex align-items-center" style="min-height: 90px;">
+                        <div class="card-header bg-primary text-white d-flex align-items-center
+                        justify-content-center" style="min-height: 90px;">
                             <h5 class="card-title mb-0">Всего рассылок</h5>
                         </div>
                         <div class="card-body">
@@ -39,7 +40,8 @@
                 <!-- Карточка с активными рассылками -->
                 <div class="col-md-4 mb-4">
                     <div class="card text-center shadow h-100">
-                        <div class="card-header bg-success text-white d-flex align-items-center" style="min-height: 90px;">
+                        <div class="card-header bg-success text-white d-flex align-items-center
+                        justify-content-center" style="min-height: 90px;">
                             <h5 class="card-title mb-0">Активных рассылок</h5>
                         </div>
                         <div class="card-body">
@@ -52,7 +54,8 @@
                 <!-- Карточка с уникальными получателями -->
                 <div class="col-md-4 mb-4">
                     <div class="card text-center shadow h-100">
-                        <div class="card-header bg-info text-white d-flex align-items-center" style="min-height: 90px;">
+                        <div class="card-header bg-info text-white d-flex align-items-center
+                        justify-content-center" style="min-height: 90px;">
                             <h5 class="card-title mb-0">Уникальных получателей</h5>
                         </div>
                         <div class="card-body">
@@ -61,18 +64,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <a href="{% url 'subscriptions:mailing_list' %}" class="btn btn-custom btn-lg">
-                    <i class="bi bi-envelope"></i> Управление рассылками
-                </a>
-                <a href="{% url 'subscriptions:messages_list' %}" class="btn btn-custom btn-lg ms-2">
-                    <i class="bi bi-pencil-square"></i> Сообщения
-                </a>
-                <a href="{% url 'subscriptions:subscribers_list' %}" class="btn btn-custom btn-lg ms-2">
-                    <i class="bi bi-people"></i> Подписчики
-                </a>
             </div>
         </div>
     </div>
